@@ -1,6 +1,6 @@
 # my_calendar_app
 
-> Vue로 만드는 나만의 캘린터 앱
+> Vue로 만드는 나만의 달력 앱
 
 ## Build Setup
 
