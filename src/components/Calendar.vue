@@ -2,11 +2,19 @@
   <section class="section">
     <div class="container">
       <h2 class="subtitle has-text-centered">
-        <button class="button is-small is-primary is-outlined mr-5"
-        @click="calendarData(-1)">&lt;</button>
+        <button
+          class="button is-small is-primary is-outlined mr-5"
+          @click="calendarData(-1)"
+        >
+          &lt;
+        </button>
         {{ year }}년 {{ month }}월
-        <button class="button is-small is-primary is-outlined ml-5"
-        @click="calendarData(1)">&gt;</button>
+        <button
+          class="button is-small is-primary is-outlined ml-5"
+          @click="calendarData(1)"
+        >
+          &gt;
+        </button>
       </h2>
       <table class="table has-text-centered is-fullwidth">
         <thead>
@@ -17,10 +25,16 @@
             <td
               v-for="(day, secondIdx) in date"
               :key="secondIdx"
-              :class="{ 'has-text-info-dark': idx === 0 && day >= lastMonthStart,
-              'has-text-danger': dates.length - 1 === idx && nextMonthStart > day,
-              'has-text-primary': day === today && month === currentMonth && year === currentYear
+              :class="{
+                'has-text-grey': idx === 0 && day >= lastMonthStart
+                || dates.length - 1 === idx && nextMonthStart > day,
+                'has-text-primary':
+                  day === today &&
+                  month === currentMonth &&
+                  year === currentYear,
               }"
+              @click="showModal(day, $event)"
+              class="pointer"
             >
               {{ day }}
             </td>
@@ -28,11 +42,19 @@
         </tbody>
       </table>
     </div>
+    <Modal v-bind:modalOpen="modalOpen" v-bind:year="year"
+    v-bind:month="month" v-bind:clickDay="clickDay" v-on:closeModal="closeModal"></Modal>
   </section>
 </template>
 
 <script>
+import Modal from './Modal';
+
 export default {
+  name: 'Calendar',
+  components: {
+    Modal,
+  },
   data() {
     return {
       days: [
@@ -52,9 +74,12 @@ export default {
       lastMonthStart: 0,
       nextMonthStart: 0,
       today: 0,
+      modalOpen: false,
+      clickDay: 0,
     };
   },
-  created() { // 데이터에 접근이 가능한 첫 번째 라이프 사이클
+  created() {
+    // 데이터에 접근이 가능한 첫 번째 라이프 사이클
     const date = new Date();
     this.currentYear = date.getFullYear();
     this.currentMonth = date.getMonth() + 1;
@@ -70,10 +95,12 @@ export default {
       } else if (arg === 1) {
         this.month += 1;
       }
-      if (this.month === 0) { // 작년 12월
+      if (this.month === 0) {
+        // 작년 12월
         this.year -= 1;
         this.month = 12;
-      } else if (this.month > 12) { // 내년 1월
+      } else if (this.month > 12) {
+        // 내년 1월
         this.year += 1;
         this.month = 1;
       }
@@ -100,13 +127,10 @@ export default {
       const prevLastDate = new Date(lastYear, lastMonth, 0).getDate(); // 지난 달 마지막 날짜
       return [firstDay, lastDate, prevLastDate];
     },
-    getMonthOfDays(
-      monthFirstDay,
-      monthLastDate,
-      prevMonthLastDate,
-    ) {
+    getMonthOfDays(monthFirstDay, monthLastDate, prevMonthLastDate) {
       let day = 1;
-      let prevDay = (prevMonthLastDate - monthFirstDay) + 1;
+      let prevDay = prevMonthLastDate - monthFirstDay;
+      prevDay += 1;
       const dates = [];
       let weekOfDays = [];
       while (day <= monthLastDate) {
@@ -136,6 +160,21 @@ export default {
       this.nextMonthStart = weekOfDays[0];
       return dates;
     },
+    showModal(day, event) {
+      const eventClass = event.target.className;
+      if (eventClass.includes('has-text-grey')) return;
+      this.clickDay = day;
+      this.modalOpen = true;
+    },
+    closeModal(event) {
+      this.modalOpen = event;
+    },
   },
 };
 </script>
+
+<style scoped>
+  .pointer {
+    cursor: pointer;
+  }
+</style>
