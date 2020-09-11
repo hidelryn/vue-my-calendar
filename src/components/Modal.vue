@@ -20,6 +20,7 @@
 
 <script>
 import axios from 'axios';
+import eventBus from '../../middleware/eventbus';
 
 export default {
   name: 'Modal',
@@ -41,11 +42,23 @@ export default {
     save() {
       axios.post('http://localhost:3000/save', {
         message: this.message,
-        date: `${this.year}-${this.month}-${this.clickDay}`,
-      }).then((result) => {
-        console.log('result', result.data);
+        year: this.year,
+        month: this.month,
+        day: this.clickDay,
+      }).then(() => {
+        const data = {
+          year: this.year,
+          month: this.month,
+          day: this.clickDay,
+          message: this.message,
+        };
+        eventBus.$emit('addList', data);
+        this.$emit('closeModal', false);
       }).catch((e) => {
-        console.log('e', e);
+        // eslint-disable-next-line no-console
+        console.error(e);
+        // eslint-disable-next-line no-alert
+        alert('등록 불가');
       });
     },
   },

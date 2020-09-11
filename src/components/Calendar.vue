@@ -16,7 +16,7 @@
           &gt;
         </button>
       </h2>
-      <table class="table has-text-centered is-fullwidth">
+      <table class="table has-text-centered is-fullwidth is-bordered">
         <thead>
           <th v-for="day in days" :key="day">{{ day }}</th>
         </thead>
@@ -69,10 +69,10 @@ export default {
       dates: [],
       currentYear: 0,
       currentMonth: 0,
-      year: 0,
-      month: 0,
       lastMonthStart: 0,
       nextMonthStart: 0,
+      year: 0,
+      month: 0,
       today: 0,
       modalOpen: false,
       clickDay: 0,
@@ -104,6 +104,7 @@ export default {
         this.year += 1;
         this.month = 1;
       }
+      this.sendYearAndMonth(); // 상위 컴포넌트에 년, 월 보내기
       const [
         monthFirstDay,
         monthLastDate,
@@ -168,6 +169,9 @@ export default {
     },
     closeModal(event) {
       this.modalOpen = event;
+    },
+    sendYearAndMonth() {
+      this.$emit('yearAndMonth', [this.year, this.month]);
     },
   },
 };
